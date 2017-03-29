@@ -139,7 +139,7 @@ const person = { // Do not use ‘let’ here, because we do not intend to chang
 	lastName: 'Papa'
 };
 
-const newPerson = Object.assign({}, person, { // The extra {} kills the reference
+const newPerson = Object.assign({}, person, { // The empty object {} kills the reference
 	lastName: 'Denver'
 });
 
@@ -163,6 +163,22 @@ console.log(person); // { firstName: ‘John’, lastName: 'Rambo' }
 ```
 
 As you can see, thanks to the use of `Object.prototype.assign`, we prevent the mutation of the person object (which would otherwise be mutated by reference, since properties are passed by reference in objects (and arrays).
+
+### Immutability: object spread operators
+
+Using `Object.prototype.assign` to create a copy of an object with new or updated values like in the examples above is good practice, but its syntax is rather verbose and thus difficult to read (depending on the context). An alternative approach is to use the **object spread operator**, proposed for newer versions of JavaScript. This lets you use the spread (`...`) operator for objects, in a similar way to the array spread operator:
+
+```ts
+// Using Object.prototype.assign:
+return Object.assign({}, originalObject, {
+	newProperty: 'some value'
+});
+
+// Using the ES7 proposed object spread operator
+return { ...originalObject, newProperty: 'some value' };
+```
+
+Since the object spread syntax is still a Stage 3 proposal for ECMAScript you'll need to use a transpiler such as Babel to use it in production. If you are using TypeScript for your project, you can already use the object spread operator if you are using version 2.1 or above.
 
 ### Immutability: the use of `const` vs `let`
 
