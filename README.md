@@ -2,7 +2,7 @@
 
 ## Functional (declarative) programming versus imperative programming
 
-Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays) and paradigms. This not only saves lots of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
+Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and even the older `.forEach` for arrays) and paradigms. This not only saves lots of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
 
 **Good:**
 ```js
@@ -58,9 +58,53 @@ const roomWithPlantsAndOnePerson = rooms // A single variable, containing the on
 	.find(room => room.personsAmount === 1);
 ```
 
+Another example, regaring assigning logic to a variable in one go:
+
+**Good:**
+```js
+const someValue = someCondition ? 'this' : 'that';
+```
+
+**Bad:**
+```js
+let someValue = '';
+if (someCondition) {
+	someValue = 'this';
+} else {
+	someValue = 'that';
+}
+```
+
+This doesn't mean we can go beserk with doing as much as possible on 'one line' of code as possible, though:
+
+**Good:**
+```js
+const someCondition = anotherCondition ? 'this' : 'that';
+const someValue = someCondition ? 'those' : 'these';
+/// etc.
+```
+
+**Very bad:**
+```js
+const someValue = someCondition
+	? (anotherCondition ? (oneMoreCondition
+		? 'those' : 'these')
+		: 'that' : 'this')
+	: (yetAnotherCondition ? 'there' : 'what???') // etc.;
+```
+
 ### Destructuring vs declaring many, many variables
 
 Try to destruct objects if you need to use their properties in new variables, rather than declaring those variables separately. This mostly comes in hand when a function needs to do something with an object it receives:
+
+**Good:**
+```js
+function doSomething(room) {
+	const { personsAmount, animalsAmount, plantsAmount } = room;
+	console.log(personsAmount); // i.e. 3
+	// ...
+}
+```
 
 **Bad:**
 ```js
@@ -68,15 +112,6 @@ function doSomething(room) {
 	let personsAmount = room.personsAmount;
 	let animalsAmount = room.animalsAmount;
 	let plantsAmount = room.plantsAmount;
-	console.log(personsAmount); // i.e. 3
-	// ...
-}
-```
-
-**Good:**
-```js
-function doSomething(room) {
-	const { personsAmount, animalsAmount, plantsAmount } = room;
 	console.log(personsAmount); // i.e. 3
 	// ...
 }
@@ -312,7 +347,7 @@ Typescript example:
 /**
  * This class does this and that.
  */
-class SomeClass extends AnotherClass {
+class SomeClass extends AnotherClass implements SomeInterface {
 
 	/**
 	* @type {boolean} - Loading state
