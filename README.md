@@ -140,7 +140,7 @@ const person = { // Do not use ‘let’ here, because we do not intend to chang
 };
 
 const newPerson = Object.assign({}, person, { // The empty object {} kills the reference
-	lastName: 'Denver'
+	lastName: 'Rambo'
 });
 
 console.log(newPerson === person); // false
