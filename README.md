@@ -1,35 +1,42 @@
-# JavaScript and TypeScript conventions
+# JavaScript conventions
 
 ## Functional (declarative) programming versus imperative programming
 
-Try to use ES2015 functional programming methods (e.g. .map, .filter and .reduce) where applicable. This not only saves lines of code and obsolete variables, it is also a lot more readable and easier to understand:
+Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays). This not only saves tons of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
 
-**Wrong:**
+**Good:**
 ```js
-let totalPersonsAmount = 0;
-let totalAnimalsAmount = 0;
-let totalPlantsAmount = 0;
+// Just 3 variables (we are likely never to change their values again)
+const totalPersonsAmount = rooms.reduce((total, room) => total + room.personsAmount, 0);
+const totalAnimalsAmount = rooms.reduce((total, room) => total + room.animalsAmount, 0);
+const totalPlantsAmount = rooms.reduce((total, room) => total + room.plantsAmount, 0);
+```
 
-for (let index = 0; index++; index >= rooms.length) {
-    totalPersonsAmount = personsCount + rooms[index].personsAmount;
-    totalAnimalsAmount = personsCount + rooms[index].animalsAmount;
-    totalPlantsAmount = personsCount + rooms[index].plantsAmount;
+**Bad:**
+```js
+let totalPersonsAmount = 0; // variable 1
+let totalAnimalsAmount = 0; // variable 2
+let totalPlantsAmount = 0; // variable 3
+
+for (let index = 0; index++; index >= rooms.length) { // variable 4
+	totalPersonsAmount = personsCount + rooms[index].personsAmount; // mutations
+	totalAnimalsAmount = personsCount + rooms[index].animalsAmount; // mutations
+	totalPlantsAmount = personsCount + rooms[index].plantsAmount; // mutations
 }
 ```
 
-**Right:**
+By using `Array.prototype.reduce` in the example above, we can define a variable and abstractly assign its logic in one go, thus saving 5 lines of code (whilst keeping readability), an unneeded variable and a headache ahead.
+
+Another example, using `Array.prototype.filter`:
+
+**Good:**
 ```js
-const totalPersonsAmount = rooms.reduce((amount, room) => (room.personsAmount + amount), 0);
-const totalAnimalsAmount = rooms.reduce((amount, room) => (room.animalsAmount + amount), 0);
-const totalPlantsAmount = rooms.reduce((amount, room) => (room.plantsAmount + amount), 0);
+const roomsWithAnimals = rooms.filter(room => room.animalsAmount);
 ```
 
-Another example:
-
-**Wrong:**
+**Bad:**
 ```js
 let roomsWithAnimals = [];
-
 for (let index = 0; index++; index >= rooms.length) {
     if (room.animalsAmount > 0) {
         roomsWithAnimals.push(room);
@@ -37,24 +44,25 @@ for (let index = 0; index++; index >= rooms.length) {
 }
 ```
 
-**Right:**
+Another example, using `Array.prototype.find`:
+
 ```js
-const roomsWithAnimals = rooms.filter(room => room.animalsAmount);
-
-// or
-
-const roomsWithAnimalsThatHavePlants = rooms
-	.filter(room => room.animalsAmount)
-	.filter(room => room.plantsAmount);
+const roomWithOnePerson = rooms.find(room => room.personsAmount === 1);
 ```
 
-## Other new ES2015+ functionality
+Try to chain these functional methods together, if possible:
 
-### Destructuring
+```js
+const roomWithPlantsAndOnePerson = rooms // A single variable, containing the one object we need
+	.filter(room => room.plantsAmount)
+	.find(room => room.personsAmount === 1);
+```
 
-Try to destruct objects if you need to use their properties in new variables, rather than declaring those variables separately:
+### Destructuring vs declaring many, many variables
 
-**Wrong:**
+Try to destruct objects if you need to use their properties in new variables, rather than declaring those variables separately. This mostly comes in hand when a function needs to do something with an object it receives:
+
+**Bad:**
 ```js
 function doSomething(room) {
 	let personsAmount = room.personsAmount;
@@ -65,7 +73,7 @@ function doSomething(room) {
 }
 ```
 
-**Right:**
+**Good:**
 ```js
 function doSomething(room) {
 	const { personsAmount, animalsAmount, plansAmount } = room;
@@ -74,20 +82,20 @@ function doSomething(room) {
 }
 ```
 
-### Merging arrays
+### Merging arrays using spread operators
 
-**Wrong:**
+**Less good:**
 ```js
 const boysArray = ['Edgar', 'Raoul', 'Marvin'];
 const girlsArray = ['Colinda', 'Sophia', 'Romy'];
 const boysAndGirls = boysArray.concat(girlsArray);
 ```
 
-**Right:**
+**Good:**
 ```js
 const boysArray = ['Edgar', 'Raoul', 'Marvin'];
 const girlsArray = ['Colinda', 'Sophia', 'Romy'];
-const boysAndGirls = [...boysArray, ...girlsArray];
+const boysAndGirls = [...boysArray, ...girlsArray]; // offers more possibilities
 
 // or:
 
@@ -100,27 +108,46 @@ const personsWithAnMInTheName = [
 ]; // logs [ ‘Marvin’, ‘Romy' ]
 ```
 
-### Immutable pattern use
+## Immutability: once a value, always that value
 
 Try to keep the defining of new variables to an absolute minimum. This will keep memory garbage (and the need to clean it up) to a minimum as well. Also, less variables means less chance of errors.
 
-***Wrong:***
+**Good:**
 ```js
-for (let key in object) { // valid code, but not optimal
-	console.log(key);
+const arrayWithKeys = Object.keys(someObject);
+```
+
+***Bad:***
+```js
+let arrayWithKeys = [];
+for (let key in someObject) {
+	arrayWithKeys.push(key);
 }
 ```
 
-**Right:**
+Try to prevent mutating of previously defined variables and data structures to a minimum or better: none at all. Why? Mutating data can produce code that is hard to read and error prone down the line. Also, by maintining the immutability pattern, your code becomes more predictable and is easier to (unit) test as well.
+
+- Assign value to a variable once
+- Prevent assigning new values by reference
+- Create a new variable if you need to work with a new value
+
+**Good:**
 ```js
-Object.keys(object).map(key => { // this is better in most cases
-	console.log(key);
+const person = { // Do not use ‘let’ here, because we do not intend to change the value
+	firstName: 'John',
+	lastName: 'Papa'
+};
+
+const newPerson = Object.assign({}, person, { // The extra {} kills the reference
+	lastName: 'Denver'
 });
+
+console.log(newPerson === person); // false
+console.log(person); // { firstName: ‘John’, lastName: ‘Papa’ }
+console.log(newPerson); // { firstName: ‘John’, lastName: ‘Rambo’ }
 ```
 
-Try to keep the mutating of previously defined variables and data structures to a minimum. Mutating data can produce code that is hard to read and error prone.
-
-**Wrong:**
+**Bad:**
 ```js
 const person = {
 	firstName: 'John',
@@ -128,53 +155,65 @@ const person = {
 };
 
 const newPerson = person;
-newPerson.lastName = ‘Denver’;
+newPerson.lastName = 'Rambo';
 
 console.log(newPerson === person); // true
-console.log(person); // { firstName: ‘John’, lastName: ‘Denver’ }
-```
-
-**Right:**
-```js
-const person = { // Do not use ‘let’ here, because we do not intend to change the value
-	firstName: 'John',
-	lastName: 'Papa'
-};
-
-const newPerson = Object.assign({}, person, {
-	lastName: 'Denver'
-});
-
-// or, by using the ES7 proposed object spread operator
-
-const newPerson = {
-	...person,
-	lastName: 'Denver'
-};
-
-console.log(newPerson === person); // false
-console.log(person); // { firstName: ‘John’, lastName: ‘Papa’ }
-console.log(newPerson); // { firstName: ‘John’, lastName: ‘Denver’ }
+console.log(person); // { firstName: ‘John’, lastName: 'Rambo' }
 ```
 
 As you can see, thanks to the use of Object.assign, we prevent the mutation of the person object (which would otherwise be mutated by reference, since properties are passed by reference in objects (and arrays).
 
-## Happy Path pattern use
+### Immutability: the use of `const` vs `let`
 
-Don’t use if-elseif-else and/or if-else loops. We should strive to reduce any unnecessary and/or superfluous nesting. Stick to the happy path:
+Try to use `const` if you intend never to change the value or reference again. Use `let` if you must reassign references (for example, within a `for` loop) or better: just don't do that. By the way, block scoping is achieved by both `let` and `const`:
 
-**Wrong:**
 ```js
-if (condition) {
-	// ...
-} else if (otherCondition) {
-	// ...
-} else {
-	// ...
+if (true) {
+	let cheese = 'yellow'; // block scoped, shiny yellow cheese
+	const banana = 'yellow';
 }
+
+cheese = 'green'; // will throw an exception because 'cheese' doesn't exist here
+console.log(banana); // same thing: ReferenceError
+```
+### Don't take `const`'s immutability for granted
+
+Remember: although `const` suggests that the variable created will be immutable (a constant, as used in many other programming languages), strictly taken it isn't. The use of `const` is no guarantee the variable's value can't be changed again:
+
+```js
+const someObject = {};
+someObject.someProperty = 42;
+console.log(someObject.someProperty); // logs 42
 ```
 
-**Right:**
+In the example above, only the _binding_ is immutable, not the value. Only primitive types values are immutable by defenition:
+
+```js
+const someVariable = 42;
+someVariable.someValue = 16;
+console.log(someVariable.someValue); // logs 'undefined'
+```
+
+To really make an object's value immutable, you can use `Object.prototype.freeze`:
+
+```js
+const someObject = Object.freeze({
+	someProperty: 42
+});
+someObject.someProperty = 16; // throws an exception
+```
+
+Keep in mind that `Object.prorotype.freeze` (which is widely supported since ES5) only 'freezes' shallow values. Deep values can (but should not) be changed.
+
+## Happy Path pattern use: avoid else, return early
+
+Don’t use if-elseif-else and/or if-else loops. We should strive to reduce any unnecessary and/or superfluous nesting:
+
+- Return as soon as you know a method cannot do any more meaningful work
+- Reduce indentation by using if/return instead of a more toplevel if/else
+- **Most important:** Try to keep the heavy part of your method's code at the lowest indendation level, and keep special cases together at the top
+
+**Good:**
 ```js
 if (condition) {
 	doStuff();
@@ -185,33 +224,20 @@ if (!condition) {
 }
 ```
 
-**Better:**
+**Bad:**
 ```js
 if (condition) {
-	doStuff();
-	return;
-}
-
-doOtherStuff();
-```
-
-Also, try to return as soon as you know your method cannot do any more meaningful work:
-
-**Wrong:**
-```js
-const someMethod = (error, results) => {
-	if (!error) {
-		doOtherStuff(results);
-		doMoreStuff();
-		// ...etc.
-
-	} else {
-		handleError(error);
-	}
+	// ...
+} else if (otherCondition) {
+	// ...
+} else {
+	// ...
 }
 ```
 
-**Right:**
+Inside methods, try to return as soon as you know your method cannot do any more meaningful work:
+
+**Good:**
 ```js
 const someMethod = (error, results) => {
 	if (error) {
@@ -222,72 +248,68 @@ const someMethod = (error, results) => {
 	doOtherStuff(results);
 	doMoreStuff();
 	// ...etc.
+	// ...
 }
 ```
 
-## Annotations and documentation
+**Bad:**
+```js
+const someMethod = (error, results) => {
+	if (!error) {
+		doOtherStuff(results);
+		doMoreStuff();
+		// ...etc.
+		// ...
 
-Write annotations for all properties and methods. This not only is helpful for new developers joining our team, but is also a helpful reminder of how your code works if you re-visit it after a long time. Besides, many IDEs and editors show annotations when you hover annotated method or function wherever it is used in your code.
-
-**Wrong:**
-```ts
-// --------- JavaScript
-
-function setLoadingState(to) { // ES5
-	this.isLoading = to;
+	} else {
+		handleError(error);
+	}
 }
+```
 
-const setIsLoading = to => { // ES2015+
+## Documenting your code with comments and annotations
+
+Write annotations for all properties and methods. This is not only helpful for new developers joining the team, but is also a useful reminder of how your code works if you re-visit it after a long time. Besides, many IDEs and editors show annotations when you hover annotated method or function wherever it is used in your code, also showing you what types a method uses and why.
+
+**Good:**
+```js
+/**
+ * Set the loading state.
+ * @param {boolean} to - The new state
+ * @return {void}
+ */
+const setIsLoading = to => { // editor now also provides type and description for method, return variable and parameter
 	this.isLoading = to;
 };
+```
 
-// --------- TypeScript
-
-public isLoading: boolean = false;
-
-public setLoadingState(to: boolean): void {
+**Bad:**
+```js
+const setLoadingState = to => { // some editors only provide the name of the 'to' parameter
 	this.isLoading = to;
 }
 ```
 
-**Right:**
+Typescript example:
 ```ts
-// --------- JavaScript
-
 /**
- * Set the loading state.
- * This is a multiline comment.
- * @param {boolean} to - The new state
- * @return {void}
+ * This class does this and that.
  */
-function setLoadingState(to) {
-	this.isLoading = to;
-}
+class SomeClass extends AnotherClass {
 
-// or
+	/**
+	* @type {boolean} - Loading state
+	*/
+	public isLoading: boolean = false;
 
-/**
- * Set the loading state.
- * @param {boolean} to - The new state
- * @return {void}
- */
-const setIsLoading = to => {
-	this.isLoading = to;
-};
+	/**
+	* Set the loading state.
+	* @param {boolean} to - The new state
+	* @return {void}
+	*/
+	public setLoadingState(to: boolean): void {
+		this.isLoading = to;
+	}
 
-// --------- TypeScript
-
-/**
- * @type {boolean} - Loading state
- */
-public isLoading: boolean = false;
-
-/**
- * Set the loading state.
- * @param {boolean} to - The new state
- * @return {void}
- */
-public setLoadingState(to: boolean): void {
-    this.isLoading = to;
 }
 ```
