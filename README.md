@@ -38,8 +38,8 @@ const roomsWithAnimals = rooms.filter(room => room.animalsAmount);
 ```js
 let roomsWithAnimals = [];
 for (let index = 0; index++; index >= rooms.length) {
-    if (room[index].animalsAmount > 0) {
-        roomsWithAnimals.push(room[index]);
+    if (rooms[index].animalsAmount > 0) {
+        roomsWithAnimals.push(rooms[index]);
     }
 }
 ```
@@ -75,22 +75,18 @@ if (someCondition) {
 }
 ```
 
-This doesn't mean we can go beserk with doing as much as possible on 'one line' of code as possible, though:
+This doesn't mean we can go beserk with doing as much as possible on 'one line' of code as possible, though. Thry this for maintaining both... maintainability and readability:
 
-**Good:**
+**Better:**
 ```js
-const someCondition = anotherCondition ? 'this' : 'that';
-const someValue = someCondition ? 'those' : 'these';
-/// etc.
+const someCondition = !anotherCondition ? 'this' : 'that';
+const someValue = (someCondition === 'that') ? 'those' : 'these';
 ```
 
 **Very bad:**
 ```js
-const someValue = someCondition
-	? (anotherCondition ? (oneMoreCondition
-		? 'those' : 'these')
-		: 'that' : 'this')
-	: (yetAnotherCondition ? 'there' : 'what???') // etc.;
+const someValue = (someCondition !== anotherCondition ? 'this' : 'that') === 'that' ? 'those' : 'these'; // say what?
+		
 ```
 
 ### Destructuring vs declaring many, many variables
