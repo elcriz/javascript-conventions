@@ -76,7 +76,7 @@ function doSomething(room) {
 **Good:**
 ```js
 function doSomething(room) {
-	const { personsAmount, animalsAmount, plansAmount } = room;
+	const { personsAmount, animalsAmount, plantsAmount } = room;
 	console.log(personsAmount); // i.e. 3
 	// ...
 }
@@ -117,7 +117,7 @@ Try to keep the defining of new variables to an absolute minimum. This will keep
 const arrayWithKeys = Object.keys(someObject);
 ```
 
-***Bad:***
+**Bad:**
 ```js
 let arrayWithKeys = [];
 for (let key in someObject) {
@@ -161,7 +161,7 @@ console.log(newPerson === person); // true
 console.log(person); // { firstName: ‘John’, lastName: 'Rambo' }
 ```
 
-As you can see, thanks to the use of Object.assign, we prevent the mutation of the person object (which would otherwise be mutated by reference, since properties are passed by reference in objects (and arrays).
+As you can see, thanks to the use of `Object.prototype.assign`, we prevent the mutation of the person object (which would otherwise be mutated by reference, since properties are passed by reference in objects (and arrays).
 
 ### Immutability: the use of `const` vs `let`
 
