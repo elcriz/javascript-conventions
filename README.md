@@ -2,7 +2,7 @@
 
 ## Functional (declarative) programming versus imperative programming
 
-Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays). This not only saves tons of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
+Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays) and paradigms. This not only saves tons of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
 
 **Good:**
 ```js
