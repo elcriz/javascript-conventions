@@ -2,7 +2,7 @@
 
 ## Functional (declarative) programming versus imperative programming
 
-Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays) and paradigms. This not only saves tons of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
+Whenever possible, try to use functional programming methods (such as `.map`, `.filter`, `.reduce` and the older `.forEach` for arrays) and paradigms. This not only saves lots of lines of code and variable creation bloat, it is also a lot more readable and easier to understand at first sight.
 
 **Good:**
 ```js
@@ -25,7 +25,7 @@ for (let index = 0; index++; index >= rooms.length) { // variable 4
 }
 ```
 
-By using `Array.prototype.reduce` in the example above, we can define a variable and abstractly assign its logic in one go, thus saving 5 lines of code (whilst keeping readability), an unneeded variable and a headache ahead.
+By using `Array.prototype.reduce` in the example above, we can define a variable and abstractly assign its logic in one go, thus saving 5 lines of code (whilst maintaining readability), an unneeded variable and a headache ahead.
 
 Another example, using `Array.prototype.filter`:
 
@@ -38,7 +38,7 @@ const roomsWithAnimals = rooms.filter(room => room.animalsAmount);
 ```js
 let roomsWithAnimals = [];
 for (let index = 0; index++; index >= rooms.length) {
-    if (room.animalsAmount > 0) {
+    if (room[index].animalsAmount > 0) {
         roomsWithAnimals.push(room);
     }
 }
