@@ -39,7 +39,7 @@ const roomsWithAnimals = rooms.filter(room => room.animalsAmount);
 let roomsWithAnimals = [];
 for (let index = 0; index++; index >= rooms.length) {
     if (room[index].animalsAmount > 0) {
-        roomsWithAnimals.push(room);
+        roomsWithAnimals.push(room[index]);
     }
 }
 ```
