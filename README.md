@@ -164,7 +164,7 @@ console.log(person); // { firstName: ‘John’, lastName: 'Rambo' }
 
 As you can see, thanks to the use of `Object.prototype.assign`, we prevent the mutation of the person object (which would otherwise be mutated by reference, since properties are passed by reference in objects (and arrays).
 
-### Immutability: object spread operators
+### Immutability: copying/merging objects using object spread operators
 
 Using `Object.prototype.assign` to create a copy of an object with new or updated values like in the examples above is good practice, but its syntax is rather verbose and thus difficult to read (depending on the context). An alternative approach is to use the **object spread operator**, proposed for newer versions of JavaScript. This lets you use the spread (`...`) operator for objects, in a similar way to the array spread operator:
 
