@@ -105,7 +105,8 @@ const hasAnM = name => name.toLowerCase().indexOf('m') !== -1;
 const personsWithAnMInTheName = [
 	...boysArray.filter(hasAnM),
 	...girlsArray.filter(hasAnM)
-]; // logs [ ‘Marvin’, ‘Romy' ]
+];
+console.log(personsWithAnMInTheName); // [ ‘Marvin’, ‘Romy' ]
 ```
 
 ## Immutability: once a value, always that value
